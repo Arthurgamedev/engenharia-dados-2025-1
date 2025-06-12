@@ -1,0 +1,10 @@
+id_usuario,nome_completo,email,cidade,idade,profissao,renda_mensal
+1,Ana Silva,ana.silva@email.com,São Paulo,28,Engenheira de Dados,8500
+2,Bruno Costa,bruno.c@email.com,Rio de Janeiro,35,Analista de BI,6500
+3,Carla Souza,carla.souza@email.com,São Paulo,29,Cientista de Dados,9200
+4,Daniel Oliveira,d.oliveira@email.com,Belo Horizonte,41,Gerente de Projetos,11000
+5,Elisa Pereira,elisa.p@email.com,Rio de Janeiro,25,Analista de Marketing,4500
+6,Fernando Martins,,São Paulo,38,Engenheiro de Dados,
+7,Gabriela Lima,gabi.lima@email.com,Salvador,22,Estudante,1800
+8,Heitor Alves,h.alves@email.com,São Paulo,31,Analista de BI,7100
+9,Irene Rocha,i_rocha@email.com,Curitiba,27,Desenvolvedora de Software,8000
