@@ -1,53 +1,38 @@
+version: 2
 models:
-  - name: clientes
-    enabled: true
-    materialized: table
-    description: "Tabela de clientes"
+  - name: stg_usuarios
+    description: "Este modelo limpa e prepara os dados brutos de usuários da camada Bronze."
     columns:
-      - name: id_cliente
-        description: "ID do cliente"
+      - name: id_usuario
+        description: "Chave primária para identificar unicamente cada usuário."
         tests:
           - unique
           - not_null
-      - name: nome_completo
-        description: "Nome completo do cliente"
-        tests:
-          - not_null
-      - name: primeiro_pedido
-        description: "Primeiro pedido do cliente"
-      - name: pedido_mais_recente
-        description: "Pedido mais recente do cliente"
-      - name: pagamento_total
-        description: "Valor total do pagamento do cliente"
-
-
-  - name: pedidos
-    enabled: true
-    materialized: table
-    description: "Tabela de pedidos"
+  - name: slv_usuarios
+    description: "Modelo intermediário que enriquece os dados dos usuários com novas colunas e padronizações."
     columns:
-      - name: id_pedido
-        description: "ID do pedido"
+      - name: id_usuario
+        description: "Chave primária do usuário."
         tests:
           - unique
           - not_null
-      - name: id_cliente
-        description: "ID do cliente que fez o pedido"
+      - name: faixa_renda
+        description: "Categorização da renda do usuário (Baixa, Média, Alta)."
+        tests:
+          - accepted_values:
+              values: ['Baixa', 'Média', 'Alta', 'N/A']
+  - name: gld_contagem_usuarios_cidade
+    description: "Tabela analítica final que resume o total de usuários por cidade."
+    columns:
+      - name: cidade_normalizada
+        description: "Nome da cidade."
         tests:
           - not_null
-      - name: data_pedido
-        description: "Data do pedido"
+  - name: gld_analise_renda_profissao
+    description: "Tabela analítica que resume informações de renda por profissão."
+    columns:
+      - name: profissao
+        description: "Nome da profissão."
         tests:
+          - unique
           - not_null
-      - name: status
-        description: "Status do pedido (ex: 'pending', 'completed', 'cancelled')"
-        tests:
-          - not_null
-      - name: credit_card_amount
-        description: Amount of the order (BRL) paid for by credit card
-      - name: coupon_amount
-        description: Amount of the order (BRL) paid for by coupon
-      - name: bank_transfer_amount
-        description: Amount of the order (BRL) paid for by bank transfer
-      - name: gift_card_amount
-        description: Amount of the order (BRL) paid for by gift card

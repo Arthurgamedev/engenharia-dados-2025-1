@@ -1,6 +1,7 @@
 version: 2
 
 models:
+  
   - name: exemplo_incremental_clientes
     enabled: true
     materialized: table

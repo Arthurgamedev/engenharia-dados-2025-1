@@ -1,55 +1,48 @@
 version: '3.8'
-
-# Define a rede que será usada pelos serviços para se comunicarem
 networks:
   app-network:
     driver: bridge
-
-# Define um volume nomeado para persistir os dados do banco de dados
 volumes:
   postgres_data:
-
 services:
-  # Serviço do Banco de Dados PostgreSQL (Warehouse)
   dbpg:
     image: postgres:13
     container_name: dbpg_warehouse
-    # Carrega as variáveis de ambiente do arquivo .env
     env_file:
       - ./.env
     ports:
-      # Mapeia a porta do container para a porta do seu computador para acesso externo
       - "5432:5432"
     volumes:
-      # Monta o volume para garantir que os dados não se percam
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-    # Verificação de saúde: garante que o dbt só inicie quando o banco estiver pronto
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-
-  # Serviço do dbt para transformações
   dbt:
-    # Constrói a imagem a partir do Dockerfile na pasta ./dbt
     build:
       context: ./dbt
     container_name: dbt_transform
-    # Carrega as mesmas variáveis de ambiente
     env_file:
       - ./.env
+    environment:
+      # Mapeia as variáveis do .env para os nomes que o dbt espera
+      DB_HOST: dbpg
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_PORT: 5432
+      DB_SCHEMA: db_dbt
+    ports:
+      - "8080:8080"
     volumes:
-      # Monta a pasta do projeto dbt para que as alterações nos modelos sejam refletidas
       - ./dbt:/usr/app
     networks:
       - app-network
-    # Garante que o serviço 'dbpg' esteja saudável antes de iniciar
     depends_on:
       dbpg:
         condition: service_healthy
-    # Comando exato para executar nosso pipeline de dados
-    command: /bin/bash -c "dbt debug && dbt seed && dbt run"
+    command: /bin/bash -c "dbt deps && dbt debug && dbt seed && dbt run && dbt docs generate && dbt docs serve --port 8080 --host 0.0.0.0"
